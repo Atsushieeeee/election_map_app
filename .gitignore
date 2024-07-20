@@ -1,0 +1,22 @@
+# .gitignore
+
+# Python関連
+*.pyc
+__pycache__/
+
+# Django関連
+db.sqlite3
+/staticfiles/
+media/
+
+# 環境関連
+.env
+venv/
+env/
+.idea/
+.vscode/
+.DS_Store
+
+# Node.js関連
+node_modules/
+dist/
