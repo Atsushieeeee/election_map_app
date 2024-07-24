@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'election_map_app.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'election_map.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
