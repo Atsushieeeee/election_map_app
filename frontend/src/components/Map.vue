@@ -6,6 +6,10 @@
     <div class="chart-container">
       <canvas id="sidebarChart"></canvas>
     </div>
+    <div class="chart-container">
+      <div>{{ "人口総数:" + totalPopulation }}</div>
+      <canvas id="populationChart"></canvas>
+    </div>
   </div>
 </template>
 
@@ -20,14 +24,22 @@ interface Vote {
   votes: number;
 }
 
+interface AgeGroup {
+  age_group: string;
+  total_population: number;
+}
+
 export default defineComponent({
   name: 'Map',
   setup() {
     const selectedPolygon = ref<google.maps.Data.Feature | null>(null);
     const sidebar = ref<HTMLDivElement | null>(null);
-    const chartData = ref<{ candidate_name: string; votes: number }[]>([]);
+    const chartData = ref<Vote[]>([]);
+    const ageGroupData = ref<AgeGroup[]>([]);
     const cityName = ref<string>('');
-    let chartInstance: Chart | null = null; // チャートインスタンスを保持する変数
+    const totalPopulation = ref<number | null>(null);
+    let chartInstance: Chart | null = null; // 得票数のチャートインスタンス
+    let populationChartInstance: Chart | null = null; // 人口分布のチャートインスタンス
 
     const closeSidebar = () => {
       if (sidebar.value) {
@@ -37,24 +49,29 @@ export default defineComponent({
     };
 
     const showSidebar = () => {
-      console.log('show?')
       if (sidebar.value) {
         sidebar.value.classList.remove('hidden');
         sidebar.value.classList.add('visible');
       }
     };
 
-    const createChart = () => {
-      const canvas = document.getElementById('sidebarChart') as HTMLCanvasElement;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          // 既存のチャートを破棄する
+    const parseAgeGroup = (ageGroup: string): number => {
+      if (ageGroup === '100以上') return 100;
+      const match = ageGroup.match(/^(\d+)-/);
+      return match ? parseInt(match[1], 10) : 0;
+    };
+
+    const createCharts = () => {
+      const votesChartCanvas = document.getElementById('sidebarChart') as HTMLCanvasElement;
+      const populationChartCanvas = document.getElementById('populationChart') as HTMLCanvasElement;
+
+      if (votesChartCanvas) {
+        const sidebarCtx = votesChartCanvas.getContext('2d');
+        if (sidebarCtx) {
           if (chartInstance) {
             chartInstance.destroy();
           }
-
-          chartInstance = new Chart(ctx, {
+          chartInstance = new Chart(sidebarCtx, {
             type: 'bar',
             data: {
               labels: chartData.value.map(vote => vote.candidate_name),
@@ -75,11 +92,43 @@ export default defineComponent({
               }
             }
           });
-        } else {
-          console.error('Canvas context not found');
         }
-      } else {
-        console.error('Canvas element not found');
+      }
+
+      if (populationChartCanvas) {
+        const populationCtx = populationChartCanvas.getContext('2d');
+        if (populationCtx) {
+          if (populationChartInstance) {
+            populationChartInstance.destroy();
+          }
+          populationChartInstance = new Chart(populationCtx, {
+            type: 'bar',
+            data: {
+              labels: ageGroupData.value
+                .filter(group => group.age_group !== '総数')
+                .sort((a, b) => parseAgeGroup(a.age_group) - parseAgeGroup(b.age_group))
+                .map(group => group.age_group),
+              datasets: [{
+                label: '年齢分布',
+                data: ageGroupData.value
+                  .filter(group => group.age_group !== '総数')
+                  .sort((a, b) => parseAgeGroup(a.age_group) - parseAgeGroup(b.age_group))
+                  .map(group => group.total_population),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        }
       }
     };
 
@@ -134,7 +183,6 @@ export default defineComponent({
           const feature = event.feature;
           const name = feature.getProperty('N03_004') as string;
           cityName.value = name;
-          console.log(cityName.value)
 
           try {
             const votesResponse = await axios.get<Vote[]>('http://127.0.0.1:8000/api/votes/', {
@@ -144,23 +192,25 @@ export default defineComponent({
                 region: '東京都'
               }
             });
-            let votesData = votesResponse.data;
+            chartData.value = votesResponse.data.sort((a, b) => b.votes - a.votes).slice(0, 10);
 
-            // 得票数の多い順に並び替え
-            votesData.sort((a, b) => b.votes - a.votes);
+            const populationResponse = await axios.get('http://127.0.0.1:8000/api/population_distribution/', {
+              params: {
+                region: name
+              }
+            });
+            const populationData = populationResponse.data;
+            ageGroupData.value = populationData.age_groups;
+            totalPopulation.value = populationData.total_population;
 
-            // トップ10の候補者のみを表示
-            chartData.value = votesData.slice(0, 10);
+            showSidebar();
 
-            showSidebar();  // サイドバーを表示
-
-            // サイドバーが表示された後にチャートを描画
             nextTick(() => {
-              createChart();
+              createCharts();
             });
 
           } catch (error) {
-            console.error('得票データの読み込みに失敗しました', error);
+            console.error('データの読み込みに失敗しました', error);
           }
 
           map.data.overrideStyle(selectedPolygon.value, {
@@ -176,7 +226,7 @@ export default defineComponent({
       }
     });
 
-    return { sidebar, chartData, closeSidebar, cityName };
+    return { sidebar, chartData, closeSidebar, cityName, totalPopulation };
   },
 });
 </script>

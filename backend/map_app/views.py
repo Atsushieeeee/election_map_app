@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import City, Vote
-from datetime import datetime
+from .models import City, Vote, PopulationDistribution
 
 def city_data(request):
     cities = City.objects.all()
@@ -31,3 +30,26 @@ def get_votes_by_city(request):
         ]
         return JsonResponse(votes_data, safe=False)
     return JsonResponse({'error': 'City and election_date parameters are required'}, status=400)
+
+def get_population_distribution(request):
+    region = request.GET.get('region')
+    
+    if region:
+        data = PopulationDistribution.objects.filter(region=region).order_by('age_group')
+        age_groups = []
+        total_population = None
+
+        for item in data:
+            if item.age_group == '総数':
+                total_population = item.total_population
+            else:
+                age_groups.append({
+                    'age_group': item.age_group,
+                    'total_population': item.total_population,
+                })
+
+        return JsonResponse({
+            'age_groups': age_groups,
+            'total_population': total_population,
+        })
+    return JsonResponse({'error': 'Region parameter is required'}, status=400)
