@@ -29,6 +29,5 @@ def get_votes_by_city(request):
             }
             for vote in votes
         ]
-        print(votes_data)
         return JsonResponse(votes_data, safe=False)
     return JsonResponse({'error': 'City and election_date parameters are required'}, status=400)

@@ -88,7 +88,10 @@ DATABASES = {
         'USER': 'election_user',
         'PASSWORD': 'password',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '',
+        'OPTIONS': {
+            'unix_socket': '/usr/local/var/mysql/mysql.sock',
+        },
     }
 }
 

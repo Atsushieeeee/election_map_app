@@ -1,7 +1,7 @@
-// src/main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
-import vuetify from './plugins/vuetify'; // Vuetify プラグインのインポート
-import 'vuetify/styles';
+import vuetify from './plugins/vuetify'; // Vuetifyの設定ファイル
 
-createApp(App).use(vuetify).mount('#app');
+createApp(App)
+  .use(vuetify)
+  .mount('#app');

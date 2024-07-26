@@ -1,16 +1,12 @@
 <template>
   <div id="map"></div>
-  <v-dialog v-model="dialog" max-width="800">
-    <v-card>
-      <v-card-title>得票数</v-card-title>
-      <v-card-text>
-        <canvas id="votesChart"></canvas>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" @click="dialog = false">閉じる</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <div ref="sidebar" class="sidebar">
+    <div class="sidebar-header">{{ cityName }}</div>
+    <button @click="closeSidebar" class="close-btn">×</button>
+    <div class="chart-container">
+      <canvas id="sidebarChart"></canvas>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -28,7 +24,64 @@ export default defineComponent({
   name: 'Map',
   setup() {
     const selectedPolygon = ref<google.maps.Data.Feature | null>(null);
-    const dialog = ref(false);
+    const sidebar = ref<HTMLDivElement | null>(null);
+    const chartData = ref<{ candidate_name: string; votes: number }[]>([]);
+    const cityName = ref<string>('');
+    let chartInstance: Chart | null = null; // チャートインスタンスを保持する変数
+
+    const closeSidebar = () => {
+      if (sidebar.value) {
+        sidebar.value.classList.remove('visible');
+        sidebar.value.classList.add('hidden');
+      }
+    };
+
+    const showSidebar = () => {
+      console.log('show?')
+      if (sidebar.value) {
+        sidebar.value.classList.remove('hidden');
+        sidebar.value.classList.add('visible');
+      }
+    };
+
+    const createChart = () => {
+      const canvas = document.getElementById('sidebarChart') as HTMLCanvasElement;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // 既存のチャートを破棄する
+          if (chartInstance) {
+            chartInstance.destroy();
+          }
+
+          chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: chartData.value.map(vote => vote.candidate_name),
+              datasets: [{
+                label: '得票数',
+                data: chartData.value.map(vote => vote.votes),
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        } else {
+          console.error('Canvas context not found');
+        }
+      } else {
+        console.error('Canvas element not found');
+      }
+    };
 
     onMounted(async () => {
       const mapOptions: google.maps.MapOptions = {
@@ -79,8 +132,9 @@ export default defineComponent({
 
           selectedPolygon.value = event.feature;
           const feature = event.feature;
-          const name = feature.getProperty('N03_004');
-          console.log(name)
+          const name = feature.getProperty('N03_004') as string;
+          cityName.value = name;
+          console.log(cityName.value)
 
           try {
             const votesResponse = await axios.get<Vote[]>('http://127.0.0.1:8000/api/votes/', {
@@ -96,41 +150,13 @@ export default defineComponent({
             votesData.sort((a, b) => b.votes - a.votes);
 
             // トップ10の候補者のみを表示
-            const topNVotesData = votesData.slice(0, 10);
+            chartData.value = votesData.slice(0, 10);
 
-            const candidateNames = topNVotesData.map((vote) => vote.candidate_name);
-            const votes = topNVotesData.map((vote) => vote.votes);
+            showSidebar();  // サイドバーを表示
 
-            dialog.value = true;  // ダイアログを表示
-            console.log(dialog.value)
-             // ダイアログが表示されるタイミングでチャートを描画
+            // サイドバーが表示された後にチャートを描画
             nextTick(() => {
-              const ctx = (document.getElementById('votesChart') as HTMLCanvasElement).getContext('2d');
-              if (ctx) {
-                new Chart(ctx, {
-                  type: 'bar',
-                  data: {
-                    labels: candidateNames,
-                    datasets: [{
-                      label: '得票数',
-                      data: votes,
-                      backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                      borderColor: 'rgba(54, 162, 235, 1)',
-                      borderWidth: 1
-                    }]
-                  },
-                  options: {
-                    responsive: true,
-                    scales: {
-                      y: {
-                        beginAtZero: true
-                      }
-                    }
-                  }
-                });
-              } else {
-                console.error('Canvas context not found');
-              }
+              createChart();
             });
 
           } catch (error) {
@@ -150,12 +176,12 @@ export default defineComponent({
       }
     });
 
-    return { dialog };
+    return { sidebar, chartData, closeSidebar, cityName };
   },
 });
 </script>
 
-<style>
+<style scoped>
 html, body, #app, #map {
   width: 100%;
   height: 100%;
@@ -169,5 +195,52 @@ html, body, #app, #map {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 600px;
+  height: 100%;
+  background: #fff;
+  border-left: 1px solid #ddd;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.3);
+  padding: 20px;
+  z-index: 1000;
+  overflow-y: auto;
+  transform: translateX(100%); /* 初期状態で右外 */
+  opacity: 0; /* 初期状態で非表示 */
+  transition: transform 0.3s ease, opacity 0.3s ease; /* スライドとフェードのアニメーション */
+}
+
+.sidebar.visible {
+  transform: translateX(0); /* 表示状態 */
+  opacity: 1; /* 表示状態 */
+}
+
+.sidebar.hidden {
+  transform: translateX(100%); /* 非表示状態 */
+  opacity: 0; /* 非表示状態 */
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.chart-container {
+  margin-top: 20px;
+}
+
+.sidebar-header {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 </style>
