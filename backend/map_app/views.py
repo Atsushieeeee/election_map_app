@@ -66,10 +66,18 @@ def population_gender_distribution(request):
 
     try:
         data = PopulationDistribution.objects.filter(region=region)
-        age_groups = data.values('age_group', 'total_population', 'total_men', 'total_women')
-        total_population = data.aggregate(total_population=Sum('total_population'))['total_population']
-        total_men = data.aggregate(total_men=Sum('total_men'))['total_men']
-        total_women = data.aggregate(total_women=Sum('total_women'))['total_women']
+
+        # '総数' のデータを取得
+        total_data = data.filter(age_group='総数').first()
+        if total_data:
+            total_population = total_data.total_population
+            total_men = total_data.total_men
+            total_women = total_data.total_women
+        else:
+            total_population = total_men = total_women = None
+
+        # '総数' を除いたデータを取得
+        age_groups = data.exclude(age_group='総数').values('age_group', 'total_population', 'total_men', 'total_women')
 
         response_data = {
             'age_groups': list(age_groups),
