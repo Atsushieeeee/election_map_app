@@ -6,6 +6,7 @@
     <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation" />
     <GenderChart :data="ageGroupData" :totalMen="totalMen" :totalWomen="totalWomen" />
     <FertilityRateChart :data="fertilityRateData" />
+    <IncomeDistributionChart :data="incomeDistributionData" /> <!-- 新しく追加 -->
   </div>
 </template>
 
@@ -15,7 +16,8 @@ import axios from 'axios';
 import VotesChart from './VotesChart.vue';
 import PopulationChart from './PopulationChart.vue';
 import GenderChart from './GenderChart.vue';
-import FertilityRateChart from './FertilityRateChart.vue'; // 新しく追加
+import FertilityRateChart from './FertilityRateChart.vue';
+import IncomeDistributionChart from './IncomeDistributionChart.vue'; // 新しく追加
 
 interface Vote {
   candidate_name: string;
@@ -34,9 +36,14 @@ interface FertilityRate {
   rate: number;
 }
 
+interface IncomeDistribution {
+  income_class: string;
+  household_count: number;
+}
+
 export default defineComponent({
   name: 'Sidebar',
-  components: { VotesChart, PopulationChart, GenderChart, FertilityRateChart },
+  components: { VotesChart, PopulationChart, GenderChart, FertilityRateChart, IncomeDistributionChart },
   props: {
     cityName: {
       type: String,
@@ -54,7 +61,8 @@ export default defineComponent({
     const totalPopulation = ref<number | null>(null);
     const totalMen = ref<number | null>(null);
     const totalWomen = ref<number | null>(null);
-    const fertilityRateData = ref<FertilityRate[]>([]); // 特殊出生率データ
+    const fertilityRateData = ref<FertilityRate[]>([]);
+    const incomeDistributionData = ref<IncomeDistribution[]>([]); // 新しく追加
 
     const closeSidebar = () => {
       emit('update:show', false);
@@ -98,7 +106,15 @@ export default defineComponent({
           }
         });
 
-        fertilityRateData.value = fertilityResponse.data; // 特殊出生率データを取得
+        fertilityRateData.value = fertilityResponse.data;
+
+        const incomeDistributionResponse = await axios.get('http://127.0.0.1:8000/api/income_distribution/', {
+          params: {
+            region: cityName
+          }
+        });
+
+        incomeDistributionData.value = incomeDistributionResponse.data; // 新しく追加
       } catch (error) {
         console.error('データの読み込みに失敗しました', error);
       }
@@ -118,7 +134,7 @@ export default defineComponent({
       }
     });
 
-    return { sidebar, closeSidebar, chartData, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData };
+    return { sidebar, closeSidebar, chartData, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData, incomeDistributionData };
   }
 });
 </script>
