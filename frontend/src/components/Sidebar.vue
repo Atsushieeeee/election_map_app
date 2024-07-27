@@ -5,6 +5,7 @@
     <VotesChart :data="chartData" />
     <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation" />
     <GenderChart :data="ageGroupData" :totalMen="totalMen" :totalWomen="totalWomen" />
+    <FertilityRateChart :data="fertilityRateData" />
   </div>
 </template>
 
@@ -14,6 +15,7 @@ import axios from 'axios';
 import VotesChart from './VotesChart.vue';
 import PopulationChart from './PopulationChart.vue';
 import GenderChart from './GenderChart.vue';
+import FertilityRateChart from './FertilityRateChart.vue'; // 新しく追加
 
 interface Vote {
   candidate_name: string;
@@ -27,9 +29,14 @@ interface AgeGroup {
   total_women: number;
 }
 
+interface FertilityRate {
+  year: string;
+  rate: number;
+}
+
 export default defineComponent({
   name: 'Sidebar',
-  components: { VotesChart, PopulationChart, GenderChart },
+  components: { VotesChart, PopulationChart, GenderChart, FertilityRateChart },
   props: {
     cityName: {
       type: String,
@@ -47,6 +54,7 @@ export default defineComponent({
     const totalPopulation = ref<number | null>(null);
     const totalMen = ref<number | null>(null);
     const totalWomen = ref<number | null>(null);
+    const fertilityRateData = ref<FertilityRate[]>([]); // 特殊出生率データ
 
     const closeSidebar = () => {
       emit('update:show', false);
@@ -83,6 +91,14 @@ export default defineComponent({
         totalMen.value = genderData.total_men;
         totalWomen.value = genderData.total_women;
         ageGroupData.value = genderData.age_groups;
+
+        const fertilityResponse = await axios.get('http://127.0.0.1:8000/api/fertility_rate/', {
+          params: {
+            region: cityName
+          }
+        });
+
+        fertilityRateData.value = fertilityResponse.data; // 特殊出生率データを取得
       } catch (error) {
         console.error('データの読み込みに失敗しました', error);
       }
@@ -102,7 +118,7 @@ export default defineComponent({
       }
     });
 
-    return { sidebar, closeSidebar, chartData, ageGroupData, totalPopulation, totalMen, totalWomen };
+    return { sidebar, closeSidebar, chartData, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData };
   }
 });
 </script>
