@@ -40,3 +40,11 @@ class FertilityRate(models.Model):
     year = models.CharField(max_length=10)
     region = models.CharField(max_length=100)
     rate = models.FloatField(null=True, blank=True)
+
+
+class IncomeDistribution(models.Model):
+    region_code = models.CharField(max_length=10)
+    region = models.CharField(max_length=100)
+    year = models.IntegerField()
+    income_class = models.CharField(max_length=50)
+    household_count = models.IntegerField()
