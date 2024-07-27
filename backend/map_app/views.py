@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Sum
-from .models import City, Vote, PopulationDistribution, FertilityRate
+from .models import City, Vote, PopulationDistribution, FertilityRate, IncomeDistribution
 
 
 def city_data(request):
@@ -101,3 +101,15 @@ def fertility_rate_by_region(request):
         return JsonResponse(response_data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+
+def income_distribution(request):
+    region = request.GET.get('region')
+    
+    income_data = IncomeDistribution.objects.filter(region=region).exclude(income_class='総数')
+    income_distribution_data = [
+        {'income_class': data.income_class, 'household_count': data.household_count}
+        for data in income_data
+    ]
+
+    return JsonResponse(income_distribution_data, safe=False)
