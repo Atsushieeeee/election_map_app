@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import { Chart } from 'chart.js';
 import 'chart.js/auto';
 
