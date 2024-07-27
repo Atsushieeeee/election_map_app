@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.db.models import Sum
 from .models import City, Vote, PopulationDistribution
+
 
 def city_data(request):
     cities = City.objects.all()
@@ -9,6 +11,7 @@ def city_data(request):
         'polygon': city.polygon,
     } for city in cities]
     return JsonResponse(data, safe=False)
+
 
 def get_votes_by_city(request):
     city = request.GET.get('city')
@@ -30,6 +33,7 @@ def get_votes_by_city(request):
         ]
         return JsonResponse(votes_data, safe=False)
     return JsonResponse({'error': 'City and election_date parameters are required'}, status=400)
+
 
 def get_population_distribution(request):
     region = request.GET.get('region')
@@ -53,3 +57,26 @@ def get_population_distribution(request):
             'total_population': total_population,
         })
     return JsonResponse({'error': 'Region parameter is required'}, status=400)
+
+
+def population_gender_distribution(request):
+    region = request.GET.get('region')
+    if not region:
+        return JsonResponse({'error': '地域が指定されていません。'}, status=400)
+
+    try:
+        data = PopulationDistribution.objects.filter(region=region)
+        age_groups = data.values('age_group', 'total_population', 'total_men', 'total_women')
+        total_population = data.aggregate(total_population=Sum('total_population'))['total_population']
+        total_men = data.aggregate(total_men=Sum('total_men'))['total_men']
+        total_women = data.aggregate(total_women=Sum('total_women'))['total_women']
+
+        response_data = {
+            'age_groups': list(age_groups),
+            'total_population': total_population,
+            'total_men': total_men,
+            'total_women': total_women,
+        }
+        return JsonResponse(response_data, safe=False)
+    except PopulationDistribution.DoesNotExist:
+        return JsonResponse({'error': 'データが見つかりません。'}, status=404)
