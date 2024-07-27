@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Sum
-from .models import City, Vote, PopulationDistribution
+from .models import City, Vote, PopulationDistribution, FertilityRate
 
 
 def city_data(request):
@@ -88,3 +88,16 @@ def population_gender_distribution(request):
         return JsonResponse(response_data, safe=False)
     except PopulationDistribution.DoesNotExist:
         return JsonResponse({'error': 'データが見つかりません。'}, status=404)
+
+
+def fertility_rate_by_region(request):
+    region = request.GET.get('region')
+    if not region:
+        return JsonResponse({'error': '地域が指定されていません。'}, status=400)
+
+    try:
+        data = FertilityRate.objects.filter(region=region).values('year', 'rate')
+        response_data = [{'year': item['year'], 'rate': item['rate']} for item in data]
+        return JsonResponse(response_data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)

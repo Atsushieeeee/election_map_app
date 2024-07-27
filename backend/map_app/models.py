@@ -34,3 +34,9 @@ class PopulationDistribution(models.Model):
 
     def __str__(self):
         return f"{self.region} - {self.age_group}"
+
+
+class FertilityRate(models.Model):
+    year = models.CharField(max_length=10)
+    region = models.CharField(max_length=100)
+    rate = models.FloatField(null=True, blank=True)
