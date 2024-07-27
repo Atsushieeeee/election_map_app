@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import { Chart } from 'chart.js';
 import 'chart.js/auto';
 
@@ -53,7 +53,7 @@ export default defineComponent({
               label: '男性人口',
               data: props.data
                 .filter(group => group.age_group !== '総数')
-                .map(group => -group.total_men), // 男性データを左に表示するためにマイナス値にする
+                .map(group => -group.total_men), // 男性データを負の値にする
               backgroundColor: 'rgba(54, 162, 235, 0.2)',
               borderColor: 'rgba(54, 162, 235, 1)',
               borderWidth: 1
@@ -69,17 +69,36 @@ export default defineComponent({
           },
           options: {
             responsive: true,
-            indexAxis: 'y', // 横向きに棒グラフを描画
+            indexAxis: 'y',
+            plugins: {
+              legend: {
+                position: 'top'
+              },
+              tooltip: {
+                callbacks: {
+                  title: function(tooltipItems) {
+                    return tooltipItems[0].label;
+                  },
+                  label: function(tooltipItem) {
+                    const datasetLabel = tooltipItem.dataset.label || '';
+                    const value = tooltipItem.raw;
+                    return `${datasetLabel}: ${Math.abs(value)}`; // ツールチップでは絶対値を表示
+                  }
+                }
+              }
+            },
             scales: {
               x: {
+                stacked: true,
                 beginAtZero: true,
                 ticks: {
                   callback: function(value) {
-                    return Math.abs(value as number);
+                    return Math.abs(value as number); // 軸上の値を絶対値にする
                   }
                 }
               },
               y: {
+                stacked: true,
                 beginAtZero: true
               }
             }
