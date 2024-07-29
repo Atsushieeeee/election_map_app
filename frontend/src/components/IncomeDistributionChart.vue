@@ -1,7 +1,8 @@
 <template>
-  <div class="chart-container">
+  <v-card class="mx-4 my-3">
+    <v-card-title class="text-h6">1世帯あたり年収高</v-card-title>
     <canvas ref="incomeDistributionChart"></canvas>
-  </div>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -39,7 +40,7 @@ export default defineComponent({
             datasets: [{
               label: '世帯数',
               data: props.data.map(item => item.household_count),
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              backgroundColor: 'rgba(54, 162, 235, 1)',
               borderColor: 'rgba(54, 162, 235, 1)',
               borderWidth: 1
             }]
@@ -64,7 +65,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.chart-container {
-  padding: 16px;
-}
 </style>

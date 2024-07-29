@@ -1,8 +1,9 @@
 <template>
-  <div class="chart-container">
-    <div>{{ "人口総数:" + totalPopulation }}</div>
+  <v-card class="mx-4 my-3">
+    <v-card-title class="text-h6">人口年齢分布</v-card-title>
+    <v-card-subtitle>{{ "人口総数:" + totalPopulation }}</v-card-subtitle>
     <canvas ref="populationChart"></canvas>
-  </div>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -48,7 +49,7 @@ export default defineComponent({
               data: props.data
                 .filter(group => group.age_group !== '総数')
                 .map(group => group.total_population),
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              backgroundColor: 'rgba(75, 192, 192, 1)',
               borderColor: 'rgba(75, 192, 192, 1)',
               borderWidth: 1
             }]
@@ -73,7 +74,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.chart-container {
-  padding: 16px;
-}
 </style>

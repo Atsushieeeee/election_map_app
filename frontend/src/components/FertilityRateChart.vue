@@ -1,7 +1,8 @@
 <template>
-  <div class="chart-container">
+  <v-card class="mx-4 my-3">
+    <v-card-title class="text-h6">合計特殊出生率</v-card-title>
     <canvas ref="fertilityRateChart"></canvas>
-  </div>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -39,10 +40,10 @@ export default defineComponent({
             datasets: [{
               label: '合計特殊出生率',
               data: data.map(rate => rate.rate),
-              backgroundColor: 'rgba(255, 87, 51, 0.2)',
+              backgroundColor: 'rgba(255, 87, 51, 1)',
               borderColor: 'rgba(255, 87, 51, 1)',
               borderWidth: 1,
-              fill: true
+              fill: false
             }]
           },
           options: {
@@ -71,7 +72,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.chart-container {
-  padding: 16px;
-}
 </style>

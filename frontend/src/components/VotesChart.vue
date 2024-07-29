@@ -1,7 +1,8 @@
 <template>
-  <div class="chart-container">
+  <v-card class="mx-4 my-3">
+    <v-card-title class="text-h6">得票数</v-card-title>
     <canvas ref="votesChart"></canvas>
-  </div>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -39,8 +40,8 @@ export default defineComponent({
             datasets: [{
               label: '得票数',
               data: props.data.map(vote => vote.votes),
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
-              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: 'rgba(82, 104, 204, 1)',
+              borderColor: 'rgba(82, 104, 204, 1)',
               borderWidth: 1
             }]
           },
@@ -64,7 +65,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.chart-container {
-  padding: 16px;
-}
 </style>
