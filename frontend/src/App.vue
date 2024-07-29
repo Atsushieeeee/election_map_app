@@ -1,7 +1,17 @@
 <template>
-  <div id="app">
-    <Map />
-  </div>
+  <v-app>
+    <v-app-bar app color="primary">
+      <v-toolbar-title>タイトル</v-toolbar-title>
+    </v-app-bar>
+    <v-main>
+      <v-container fluid class="fill-height pa-0">
+        <Map />
+      </v-container>
+    </v-main>
+    <v-footer app color="primary" class="white--text d-flex align-center justify-center">
+      フッター
+    </v-footer>
+  </v-app>
 </template>
 
 <script lang="ts">
@@ -16,6 +26,8 @@ export default defineComponent({
 });
 </script>
 
-<style>
-/* 必要に応じてスタイルを追加 */
+<style scoped>
+.fill-height {
+  height: 100%;
+}
 </style>

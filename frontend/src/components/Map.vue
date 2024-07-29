@@ -1,5 +1,5 @@
 <template>
-  <div id="map"></div>
+  <div id="map" class="map-container"></div>
   <Sidebar
     :cityName="cityName"
     :show="sidebarVisible"
@@ -104,9 +104,7 @@ export default defineComponent({
 <style scoped>
 #map {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 100px);
 }
 </style>

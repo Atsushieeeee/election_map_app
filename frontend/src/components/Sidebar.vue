@@ -6,7 +6,7 @@
     <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation" />
     <GenderChart :data="ageGroupData" :totalMen="totalMen" :totalWomen="totalWomen" />
     <FertilityRateChart :data="fertilityRateData" />
-    <IncomeDistributionChart :data="incomeDistributionData" /> <!-- 新しく追加 -->
+    <IncomeDistributionChart :data="incomeDistributionData" />
   </div>
 </template>
 
@@ -17,7 +17,7 @@ import VotesChart from './VotesChart.vue';
 import PopulationChart from './PopulationChart.vue';
 import GenderChart from './GenderChart.vue';
 import FertilityRateChart from './FertilityRateChart.vue';
-import IncomeDistributionChart from './IncomeDistributionChart.vue'; // 新しく追加
+import IncomeDistributionChart from './IncomeDistributionChart.vue';
 
 interface Vote {
   candidate_name: string;
@@ -143,14 +143,15 @@ export default defineComponent({
 .sidebar {
   position: fixed;
   right: 0;
-  top: 0;
+  top: 60px;
   width: 600px;
-  height: 100%;
+  height: calc(100% - 100px);
   background: #fff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
   overflow-y: auto;
+  background: #f5f5f5;
 }
 
 .sidebar.visible {
