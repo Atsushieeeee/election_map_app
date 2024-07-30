@@ -1,7 +1,6 @@
 <template>
-  <div ref="sidebar" :class="['sidebar', { visible: show, hidden: !show }]">
+  <div ref="sidebar" class="sidebar visible">
     <div class="sidebar-header">{{ cityName }}</div>
-    <button @click="closeSidebar" class="close-btn">×</button>
     <VotesChart :data="chartData" />
     <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation" />
     <GenderChart :data="ageGroupData" :totalMen="totalMen" :totalWomen="totalWomen" />
@@ -49,24 +48,15 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    show: {
-      type: Boolean,
-      default: false,
-    },
   },
-  setup(props, { emit }) {
-    const sidebar = ref<HTMLDivElement | null>(null);
+  setup(props) {
     const chartData = ref<Vote[]>([]);
     const ageGroupData = ref<AgeGroup[]>([]);
     const totalPopulation = ref<number | null>(null);
     const totalMen = ref<number | null>(null);
     const totalWomen = ref<number | null>(null);
     const fertilityRateData = ref<FertilityRate[]>([]);
-    const incomeDistributionData = ref<IncomeDistribution[]>([]); // 新しく追加
-
-    const closeSidebar = () => {
-      emit('update:show', false);
-    };
+    const incomeDistributionData = ref<IncomeDistribution[]>([]);
 
     const fetchData = async (cityName: string) => {
       try {
@@ -114,52 +104,29 @@ export default defineComponent({
           }
         });
 
-        incomeDistributionData.value = incomeDistributionResponse.data; // 新しく追加
+        incomeDistributionData.value = incomeDistributionResponse.data;
       } catch (error) {
         console.error('データの読み込みに失敗しました', error);
       }
     };
 
-    watch(() => props.show, async (newValue: boolean) => {
-      if (newValue) {
-        await fetchData(props.cityName);
-        nextTick();
-      }
-    });
-
     watch(() => props.cityName, async (newValue: string) => {
-      if (props.show) {
-        await fetchData(newValue);
-        nextTick();
-      }
+      await fetchData(newValue);
+      nextTick();
     });
 
-    return { sidebar, closeSidebar, chartData, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData, incomeDistributionData };
+    return { chartData, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData, incomeDistributionData };
   }
 });
 </script>
 
 <style scoped>
 .sidebar {
-  position: fixed;
-  right: 0;
-  top: 60px;
-  width: 600px;
-  height: calc(100% - 100px);
+  width: 400px;
+  height: 100%;
   background: #fff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
   overflow-y: auto;
   background: #f5f5f5;
-}
-
-.sidebar.visible {
-  transform: translateX(0);
-}
-
-.sidebar.hidden {
-  transform: translateX(100%);
 }
 
 .sidebar-header {
@@ -168,17 +135,4 @@ export default defineComponent({
   background: #f5f5f5;
 }
 
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.chart-container {
-  padding: 16px;
-}
 </style>

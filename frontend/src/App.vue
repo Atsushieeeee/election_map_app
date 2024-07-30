@@ -1,33 +1,55 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary">
-      <v-toolbar-title>タイトル</v-toolbar-title>
-    </v-app-bar>
-    <v-main>
-      <v-container fluid class="fill-height pa-0">
-        <Map />
-      </v-container>
-    </v-main>
-    <v-footer app color="primary" class="white--text d-flex align-center justify-center">
+  <div id="app">
+    <header class="header">
+      <h1>タイトル</h1>
+    </header>
+    <main class="main-content">
+      <Main />
+    </main>
+    <footer class="footer">
       フッター
-    </v-footer>
-  </v-app>
+    </footer>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Map from './components/Map.vue';
+import Main from './components/Main.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    Map,
+    Main,
   },
 });
 </script>
 
 <style scoped>
-.fill-height {
-  height: 100%;
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  background-color: #f5f5f5;
+  padding: 16px;
+  box-shadow: none;
+  text-align: center;
+}
+
+.main-content {
+  flex: 1;
+  background-color: #f5f5f5;
+  padding: 0 16px;
+  display: flex;
+  justify-content: center;
+  height: calc(100% - 100px);
+}
+
+.footer {
+  background-color: #f5f5f5;
+  box-shadow: none;
+  text-align: center;
 }
 </style>
