@@ -2,9 +2,9 @@
   <div ref="sidebar" :class="['sidebar', { visible: show, hidden: !show }]">
     <div class="sidebar-header">{{ cityName }}</div>
     <button @click="closeSidebar" class="close-btn">×</button>
-    <VotesChart :data="chartData" />
-    <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation" />
-    <GenderChart :data="ageGroupData" :totalMen="totalMen" :totalWomen="totalWomen" />
+    <VotesChart :data="chartData" :totalVotes="totalVotes || 0" />
+    <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation || 0" />
+    <GenderChart :data="ageGroupData" :totalMen="totalMen || 0" :totalWomen="totalWomen || 0" />
     <FertilityRateChart :data="fertilityRateData" />
     <IncomeDistributionChart :data="incomeDistributionData" />
   </div>
@@ -22,6 +22,7 @@ import IncomeDistributionChart from './IncomeDistributionChart.vue';
 interface Vote {
   candidate_name: string;
   votes: number;
+  total_votes: number;
 }
 
 interface AgeGroup {
@@ -57,12 +58,13 @@ export default defineComponent({
   setup(props, { emit }) {
     const sidebar = ref<HTMLDivElement | null>(null);
     const chartData = ref<Vote[]>([]);
+    const totalVotes = ref<number | null>(null);
     const ageGroupData = ref<AgeGroup[]>([]);
     const totalPopulation = ref<number | null>(null);
     const totalMen = ref<number | null>(null);
     const totalWomen = ref<number | null>(null);
     const fertilityRateData = ref<FertilityRate[]>([]);
-    const incomeDistributionData = ref<IncomeDistribution[]>([]); // 新しく追加
+    const incomeDistributionData = ref<IncomeDistribution[]>([]);
 
     const closeSidebar = () => {
       emit('update:show', false);
@@ -70,7 +72,7 @@ export default defineComponent({
 
     const fetchData = async (cityName: string) => {
       try {
-        const votesResponse = await axios.get<Vote[]>('http://127.0.0.1:8000/api/votes/', {
+        const votesResponse = await axios.get<{ votes: Vote[], total_votes: number }>('http://127.0.0.1:8000/api/votes/', {
           params: {
             city: cityName,
             election_date: '2024-07-07',
@@ -78,6 +80,7 @@ export default defineComponent({
           }
         });
         chartData.value = votesResponse.data.sort((a, b) => b.votes - a.votes).slice(0, 10);
+        totalVotes.value = votesResponse.data[0].total_votes;
 
         const populationResponse = await axios.get('http://127.0.0.1:8000/api/population_distribution/', {
           params: {
@@ -114,7 +117,7 @@ export default defineComponent({
           }
         });
 
-        incomeDistributionData.value = incomeDistributionResponse.data; // 新しく追加
+        incomeDistributionData.value = incomeDistributionResponse.data;
       } catch (error) {
         console.error('データの読み込みに失敗しました', error);
       }
@@ -134,7 +137,7 @@ export default defineComponent({
       }
     });
 
-    return { sidebar, closeSidebar, chartData, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData, incomeDistributionData };
+    return { sidebar, closeSidebar, chartData, totalVotes, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData, incomeDistributionData };
   }
 });
 </script>
@@ -143,9 +146,8 @@ export default defineComponent({
 .sidebar {
   position: fixed;
   right: 0;
-  top: 60px;
   width: 600px;
-  height: calc(100% - 100px);
+  height: calc(100% - 95px);
   background: #fff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   transform: translateX(100%);
@@ -164,7 +166,7 @@ export default defineComponent({
 
 .sidebar-header {
   font-size: 24px;
-  padding: 16px;
+  padding: 16px 16px 0 16px;
   background: #f5f5f5;
 }
 
