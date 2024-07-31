@@ -105,6 +105,6 @@ export default defineComponent({
 #map {
   position: absolute;
   width: 100%;
-  height: calc(100% - 100px);
+  height: calc(100% - 95px);
 }
 </style>

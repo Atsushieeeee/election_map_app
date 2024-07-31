@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary">
-      <v-toolbar-title>タイトル</v-toolbar-title>
+    <v-app-bar app color="primary" :elevation="0">
+      <v-app-bar-title>選挙得票数可視化アプリ</v-app-bar-title>
     </v-app-bar>
     <v-main>
       <v-container fluid class="fill-height pa-0">
@@ -9,7 +9,8 @@
       </v-container>
     </v-main>
     <v-footer app color="primary" class="white--text d-flex align-center justify-center">
-      フッター
+      <div class="copylight">Copyright©ATSUSHI. All Rights Reserved.
+      </div>
     </v-footer>
   </v-app>
 </template>
@@ -29,5 +30,9 @@ export default defineComponent({
 <style scoped>
 .fill-height {
   height: 100%;
+}
+.copylight {
+  font-size: 10px;
+  text-align: center;
 }
 </style>
