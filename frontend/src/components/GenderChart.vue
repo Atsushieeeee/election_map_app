@@ -1,9 +1,17 @@
 <template>
   <v-card class="mx-4 my-3">
-    <v-card-title class="text-h6">男女比年齢分布</v-card-title>
-    <v-card-subtitle>{{ "男性総数:" + totalMen }}</v-card-subtitle>
-    <v-card-subtitle>{{ "女性総数:" + totalWomen}}</v-card-subtitle>
-    <canvas ref="genderChart"></canvas>
+    <div class="card-header" @click="toggleChart">
+      <v-card-title class="text-h6">男女比年齢分布</v-card-title>
+      <div class="subtitles">
+        <v-card-subtitle>{{ "男性総数：" + formattedMen + "人"}}</v-card-subtitle>
+        <v-card-subtitle>{{ "女性総数：" + formattedWomen + "人" }}</v-card-subtitle>
+      </div>
+    </div>
+    <v-expand-transition>
+      <div v-show="chartVisible">
+        <canvas ref="genderChart"></canvas>
+      </div>
+    </v-expand-transition>
   </v-card>
 </template>
 
@@ -32,6 +40,19 @@ export default defineComponent({
     totalWomen: {
       type: Number,
       required: true
+    }
+  },
+  data() {
+    return {
+      chartVisible: true
+    };
+  },
+  computed: {
+    formattedMen() {
+      return new Intl.NumberFormat('ja-JP').format(this.totalMen);
+    },
+    formattedWomen() {
+      return new Intl.NumberFormat('ja-JP').format(this.totalWomen);
     }
   },
   setup(props) {
@@ -111,9 +132,26 @@ export default defineComponent({
     watch(() => props.data, createChart, { immediate: true });
 
     return { genderChart };
+  },
+  methods: {
+    toggleChart() {
+      this.chartVisible = !this.chartVisible;
+    }
   }
 });
 </script>
 
 <style scoped>
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.subtitles {
+  display: flex;
+  flex-direction: column;
+  margin-left: 16px;
+}
 </style>

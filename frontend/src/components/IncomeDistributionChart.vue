@@ -1,7 +1,13 @@
 <template>
   <v-card class="mx-4 my-3">
-    <v-card-title class="text-h6">1世帯あたり年収高</v-card-title>
-    <canvas ref="incomeDistributionChart"></canvas>
+    <div class="card-header" @click="toggleChart">
+      <v-card-title class="text-h6">1世帯あたり年収高</v-card-title>
+    </div>
+    <v-expand-transition>
+      <div v-show="chartVisible">
+        <canvas ref="incomeDistributionChart"></canvas>
+      </div>
+    </v-expand-transition>
   </v-card>
 </template>
 
@@ -22,6 +28,11 @@ export default defineComponent({
       type: Array as () => IncomeDistribution[],
       required: true
     }
+  },
+  data() {
+    return {
+      chartVisible: true
+    };
   },
   setup(props) {
     const incomeDistributionChart = ref<HTMLCanvasElement | null>(null);
@@ -60,9 +71,20 @@ export default defineComponent({
     watch(() => props.data, createChart, { immediate: true });
 
     return { incomeDistributionChart };
+  },
+  methods: {
+    toggleChart() {
+      this.chartVisible = !this.chartVisible;
+    }
   }
 });
 </script>
 
 <style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
 </style>

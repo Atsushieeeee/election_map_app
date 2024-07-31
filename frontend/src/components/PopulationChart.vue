@@ -1,8 +1,14 @@
 <template>
   <v-card class="mx-4 my-3">
-    <v-card-title class="text-h6">人口年齢分布</v-card-title>
-    <v-card-subtitle>{{ "人口総数:" + totalPopulation }}</v-card-subtitle>
-    <canvas ref="populationChart"></canvas>
+    <div class="card-header" @click="toggleChart">
+      <v-card-title class="text-h6">人口年齢分布</v-card-title>
+      <v-card-subtitle class="subtitle">{{ "人口総数：" + formattedPopulation + "人" }}</v-card-subtitle>
+    </div>
+    <v-expand-transition>
+      <div v-show="chartVisible">
+        <canvas ref="populationChart"></canvas>
+      </div>
+    </v-expand-transition>
   </v-card>
 </template>
 
@@ -26,6 +32,16 @@ export default defineComponent({
     totalPopulation: {
       type: Number,
       required: true
+    }
+  },
+  data() {
+    return {
+      chartVisible: true
+    };
+  },
+  computed: {
+    formattedPopulation() {
+      return new Intl.NumberFormat('ja-JP').format(this.totalPopulation);
     }
   },
   setup(props) {
@@ -69,9 +85,24 @@ export default defineComponent({
     watch(() => props.data, createChart, { immediate: true });
 
     return { populationChart };
+  },
+  methods: {
+    toggleChart() {
+      this.chartVisible = !this.chartVisible;
+    }
   }
 });
 </script>
 
 <style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.subtitle {
+  margin-left: auto;
+}
 </style>

@@ -1,7 +1,13 @@
 <template>
   <v-card class="mx-4 my-3">
-    <v-card-title class="text-h6">合計特殊出生率</v-card-title>
-    <canvas ref="fertilityRateChart"></canvas>
+    <div class="card-header" @click="toggleChart">
+      <v-card-title class="text-h6">合計特殊出生率</v-card-title>
+    </div>
+    <v-expand-transition>
+      <div v-show="chartVisible">
+        <canvas ref="fertilityRateChart"></canvas>
+      </div>
+    </v-expand-transition>
   </v-card>
 </template>
 
@@ -22,6 +28,11 @@ export default defineComponent({
       type: Array as () => FertilityRate[],
       required: true
     }
+  },
+  data() {
+    return {
+      chartVisible: true
+    };
   },
   setup(props) {
     const fertilityRateChart = ref<HTMLCanvasElement | null>(null);
@@ -67,9 +78,20 @@ export default defineComponent({
     }, { immediate: true });
 
     return { fertilityRateChart };
+  },
+  methods: {
+    toggleChart() {
+      this.chartVisible = !this.chartVisible;
+    }
   }
 });
 </script>
 
 <style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
 </style>
