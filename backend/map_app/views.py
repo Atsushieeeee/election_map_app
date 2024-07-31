@@ -20,6 +20,7 @@ def get_votes_by_city(request):
 
     if city and election_date:
         votes = Vote.objects.filter(city=city, election_date=election_date, region=region)
+        total_votes = sum(vote.votes for vote in votes)
         votes_data = [
             {
                 'candidate_name': vote.candidate_name,
@@ -27,7 +28,8 @@ def get_votes_by_city(request):
                 'city': vote.city,
                 'votes': vote.votes,
                 'election_date': vote.election_date,
-                'region': vote.region
+                'region': vote.region,
+                'total_votes': total_votes
             }
             for vote in votes
         ]
