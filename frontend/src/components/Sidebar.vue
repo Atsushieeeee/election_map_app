@@ -2,7 +2,7 @@
   <div ref="sidebar" :class="['sidebar', { visible: show, hidden: !show }]">
     <div class="sidebar-header">{{ cityName }}</div>
     <button @click="closeSidebar" class="close-btn">×</button>
-    <VotesChart :data="chartData" :totalVotes="totalVotes || 0" />
+    <VotesChart :data="votesData" :totalVotes="totalVotes || 0" />
     <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation || 0" />
     <GenderChart :data="ageGroupData" :totalMen="totalMen || 0" :totalWomen="totalWomen || 0" />
     <FertilityRateChart :data="fertilityRateData" />
@@ -57,7 +57,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const sidebar = ref<HTMLDivElement | null>(null);
-    const chartData = ref<Vote[]>([]);
+    const votesData = ref<Vote[]>([]);
     const totalVotes = ref<number | null>(null);
     const ageGroupData = ref<AgeGroup[]>([]);
     const totalPopulation = ref<number | null>(null);
@@ -72,14 +72,15 @@ export default defineComponent({
 
     const fetchData = async (cityName: string) => {
       try {
-        const votesResponse = await axios.get<{ votes: Vote[], total_votes: number }>('http://127.0.0.1:8000/api/votes/', {
+        const votesResponse = await axios.get('http://127.0.0.1:8000/api/votes/', {
           params: {
             city: cityName,
             election_date: '2024-07-07',
             region: '東京都'
           }
         });
-        chartData.value = votesResponse.data.sort((a, b) => b.votes - a.votes).slice(0, 10);
+        const sortedVotes = votesResponse.data.sort((a: Vote, b: Vote) => b.votes - a.votes).slice(0, 10);
+        votesData.value = sortedVotes;
         totalVotes.value = votesResponse.data[0].total_votes;
 
         const populationResponse = await axios.get('http://127.0.0.1:8000/api/population_distribution/', {
@@ -137,7 +138,7 @@ export default defineComponent({
       }
     });
 
-    return { sidebar, closeSidebar, chartData, totalVotes, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData, incomeDistributionData };
+    return { sidebar, closeSidebar, votesData, totalVotes, ageGroupData, totalPopulation, totalMen, totalWomen, fertilityRateData, incomeDistributionData };
   }
 });
 </script>
