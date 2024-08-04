@@ -154,4 +154,9 @@ export default defineComponent({
   flex-direction: column;
   margin-left: 16px;
 }
+
+canvas {
+  width: 400px;
+}
+
 </style>

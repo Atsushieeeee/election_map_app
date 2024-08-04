@@ -87,4 +87,9 @@ export default defineComponent({
   align-items: center;
   cursor: pointer;
 }
+
+canvas {
+  width: 400px;
+}
+
 </style>

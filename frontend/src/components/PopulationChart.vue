@@ -105,4 +105,9 @@ export default defineComponent({
 .subtitle {
   margin-left: auto;
 }
+
+canvas {
+  width: 400px;
+}
+
 </style>
