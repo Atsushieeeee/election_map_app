@@ -81,6 +81,7 @@ export default {
 .container {
   display: flex;
   height: 100vh;
+  background: #f5f5f5;
 }
 
 .sidebar {
@@ -103,11 +104,12 @@ export default {
   position: relative;
   width: 100%;
   height: calc(100% - 300px);
+  padding: 16px 16px 0 16px;
 }
 
 .chart-container {
   height: 300px;
-  background-color: #fff;
+  background-color: #f5f5f5;
   overflow-x: auto;
   white-space: nowrap;
   display: flex;
@@ -115,7 +117,6 @@ export default {
 
 .charts-wrapper {
   display: flex;
-  gap: 16px;
   height: 100%;
 }
 </style>

@@ -146,4 +146,8 @@ export default defineComponent({
   width: 100%;
   height: 100%;
 }
+
+.map-container {
+  border-radius: 4px;
+}
 </style>
