@@ -2,17 +2,38 @@
   <v-app>
     <div id="app">
       <div class="container">
-        <Sidebar class="sidebar" />
-        <div class="main-content">
-          <Map class="map" @data-updated="updateData" />
-          <div class="chart-container">
-            <div class="charts-wrapper">
-              <VotesChart :data="votesData" :totalVotes="totalVotes || 0" />
-              <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation || 0" />
-              <GenderChart :data="ageGroupData" :totalMen="totalMen || 0" :totalWomen="totalWomen || 0" />
-              <FertilityRateChart :data="fertilityRateData" />
-              <IncomeDistributionChart :data="incomeDistributionData" />
+        <Sidebar v-if="!isDashboardView" class="sidebar" />
+        <button class="dashboard-toggle" @click="toggleDashboard">ダッシュボード変更</button>
+        <div>
+          <div v-if="!isDashboardView">
+            <div class="main-content">
+              <Map class="map" @data-updated="updateData" />
+              <div class="chart-container">
+                <div class="charts-wrapper">
+                  <VotesChart :data="votesData" :totalVotes="totalVotes || 0" />
+                  <PopulationChart :data="ageGroupData" :totalPopulation="totalPopulation || 0" />
+                  <GenderChart :data="ageGroupData" :totalMen="totalMen || 0" :totalWomen="totalWomen || 0" />
+                  <FertilityRateChart :data="fertilityRateData" />
+                  <IncomeDistributionChart :data="incomeDistributionData" />
+                </div>
+              </div>
             </div>
+          </div>
+          <div v-else class="dashboard-view">
+            <div class="row">
+              <Map class="tile map-tile" @data-updated="updateData" />
+              <VotesChart class="tile" :data="votesData" :totalVotes="totalVotes || 0" />
+            </div>
+            <div class="row">
+              <PopulationChart class="tile" :data="ageGroupData" :totalPopulation="totalPopulation || 0" />
+              <GenderChart class="tile" :data="ageGroupData" :totalMen="totalMen || 0" :totalWomen="totalWomen || 0" />
+            </div>
+            <div class="row">
+              <FertilityRateChart class="tile" :data="fertilityRateData" />
+              <IncomeDistributionChart class="tile" :data="incomeDistributionData" />
+            </div>
+            <!-- <div class="row">
+            </div> -->
           </div>
         </div>
       </div>
@@ -42,6 +63,7 @@ export default {
     IncomeDistributionChart,
   },
   setup() {
+    const isDashboardView = ref(false);
     const votesData = ref([]);
     const totalVotes = ref(null);
     const ageGroupData = ref([]);
@@ -62,7 +84,12 @@ export default {
       incomeDistributionData.value = data.incomeDistributionData || [];
     };
 
+    const toggleDashboard = () => {
+      isDashboardView.value = !isDashboardView.value;
+    };
+
     return {
+      isDashboardView,
       votesData,
       totalVotes,
       ageGroupData,
@@ -72,6 +99,7 @@ export default {
       fertilityRateData,
       incomeDistributionData,
       updateData,
+      toggleDashboard,
     };
   },
 };
@@ -97,6 +125,19 @@ export default {
   flex-direction: column;
   height: 100vh;
   width: calc(100vw - 240px);
+  position: relative;
+}
+
+.dashboard-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .map {
@@ -118,5 +159,32 @@ export default {
 .charts-wrapper {
   display: flex;
   height: 100%;
+}
+
+.dashboard-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  height: calc(100vh - 32px);
+  width: 100vw;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+
+.tile {
+  background: white;
+  padding: 16px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex: 1;
+}
+
+.map-tile {
+  flex: 1;
 }
 </style>
