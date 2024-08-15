@@ -51,8 +51,8 @@ export default defineComponent({
             datasets: [{
               label: '世帯数',
               data: props.data.map(item => item.household_count),
-              backgroundColor: 'rgba(54, 162, 235, 1)',
-              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: 'rgba(7, 51, 101, 0.9)',
+              borderColor: 'rgba(7, 51, 101, 0.9)',
               borderWidth: 1
             }]
           },

@@ -101,15 +101,15 @@ export default defineComponent({
         const defaultStyle = {
           fillColor: '#D3D3D3',
           fillOpacity: 0.5,
-          strokeColor: '#4052a2',
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
+          strokeColor: '#666666',
+          strokeOpacity: 0.7,
+          strokeWeight: 1,
         };
 
         const selectedStyle = {
-          fillColor: '#4052a2',
-          fillOpacity: 0.7,
-          strokeColor: '#4052a2',
+          fillColor: '#466098',
+          fillOpacity: 0.8,
+          strokeColor: '#666666',
           strokeOpacity: 1.0,
           strokeWeight: 2,
         };

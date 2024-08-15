@@ -76,16 +76,16 @@ export default defineComponent({
               data: props.data
                 .filter(group => group.age_group !== '総数')
                 .map(group => -group.total_men), // 男性データを負の値にする
-              backgroundColor: 'rgba(54, 162, 235, 1)',
-              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: 'rgba(25, 153, 159, 0.9)',
+              borderColor: 'rgba(25, 153, 159, 0.9)',
               borderWidth: 1
             }, {
               label: '女性人口',
               data: props.data
                 .filter(group => group.age_group !== '総数')
                 .map(group => group.total_women),
-              backgroundColor: 'rgba(255, 99, 132, 1)',
-              borderColor: 'rgba(255, 99, 132, 1)',
+              backgroundColor: 'rgba(255, 138, 76, 1)',
+              borderColor: 'rgba(255, 138, 76, 1)',
               borderWidth: 1
             }]
           },
