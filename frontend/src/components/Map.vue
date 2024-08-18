@@ -1,6 +1,7 @@
 <template>
   <div id="map" class="map-container"></div>
-  <Sidebar
+  <LeftSidebar/>
+  <RightSidebar
     :cityName="cityName"
     :show="sidebarVisible"
     @update:show="sidebarVisible = $event"
@@ -10,12 +11,14 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
-import Sidebar from './Sidebar.vue';
+import RightSidebar from './RightSidebar.vue';
+import LeftSidebar from './LeftSidebar.vue';
 
 export default defineComponent({
   name: 'Map',
   components: {
-    Sidebar,
+    RightSidebar,
+    LeftSidebar,
   },
   setup() {
     const selectedPolygon = ref<google.maps.Data.Feature | null>(null);
@@ -34,6 +37,10 @@ export default defineComponent({
       const mapOptions: google.maps.MapOptions = {
         center: { lat: 35.682839, lng: 139.759455 },
         zoom: 10,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+          position: google.maps.ControlPosition.TOP_RIGHT,
+        },
       };
 
       const map = new google.maps.Map(document.getElementById('map') as HTMLElement, mapOptions);

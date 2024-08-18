@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" :elevation="0">
-      <v-app-bar-title>選挙得票数可視化アプリ</v-app-bar-title>
+      <v-app-bar-title>
+        <span class="mdi mdi-chart-line-variant"></span>選挙得票数可視化アプリ
+      </v-app-bar-title>
     </v-app-bar>
     <v-main>
       <v-container fluid class="fill-height pa-0">
