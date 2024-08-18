@@ -51,8 +51,8 @@ export default defineComponent({
             datasets: [{
               label: '合計特殊出生率',
               data: data.map(rate => rate.rate),
-              backgroundColor: 'rgba(255, 87, 51, 1)',
-              borderColor: 'rgba(255, 87, 51, 1)',
+              backgroundColor: 'rgba(247, 88, 29, 0.9)',
+              borderColor: 'rgba(247, 88, 29, 0.9)',
               borderWidth: 1,
               fill: false
             }]

@@ -61,8 +61,8 @@ export default defineComponent({
             datasets: [{
               label: '得票数',
               data: props.data.map(vote => vote.votes),
-              backgroundColor: 'rgba(82, 104, 204, 1)',
-              borderColor: 'rgba(82, 104, 204, 1)',
+              backgroundColor: 'rgba(70, 96, 152, 0.9)',
+              borderColor: 'rgba(70, 96, 152, 0.9)',
               borderWidth: 1
             }]
           },

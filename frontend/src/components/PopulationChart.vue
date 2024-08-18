@@ -65,8 +65,8 @@ export default defineComponent({
               data: props.data
                 .filter(group => group.age_group !== '総数')
                 .map(group => group.total_population),
-              backgroundColor: 'rgba(75, 192, 192, 1)',
-              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(92, 202, 208, 1)',
+              borderColor: 'rgba(92, 202, 208, 1)',
               borderWidth: 1
             }]
           },
